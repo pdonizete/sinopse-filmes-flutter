@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../models/movie.dart';
 import '../services/movie_service.dart';
 import '../services/settings_service.dart';
+import '../utils/share_utils.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -79,12 +81,40 @@ class _HomeScreenState extends State<HomeScreen> {
     ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
   }
 
+  Future<void> _shareSynopsis() async {
+    final movie = _movie;
+    if (movie == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Busque um filme antes de compartilhar a sinopse.'),
+        ),
+      );
+      return;
+    }
+
+    await SharePlus.instance.share(
+      ShareParams(text: buildMovieShareContent(movie)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sinopse de Filmes'),
         actions: [
+          Semantics(
+            button: true,
+            label: 'Compartilhar sinopse',
+            hint:
+                'Compartilha título, ano e sinopse do filme atual em aplicativos como WhatsApp e Telegram',
+            child: IconButton(
+              tooltip: 'Compartilhar sinopse',
+              onPressed: _shareSynopsis,
+              icon: const Icon(Icons.share),
+            ),
+          ),
           Semantics(
             button: true,
             label: 'Abrir configurações',
@@ -182,6 +212,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 _movie!.plot,
                                 style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const SizedBox(height: 16),
+                              Semantics(
+                                button: true,
+                                label: 'Compartilhar sinopse',
+                                hint:
+                                    'Compartilha título, ano e sinopse em aplicativos como WhatsApp e Telegram',
+                                child: OutlinedButton.icon(
+                                  onPressed: _shareSynopsis,
+                                  icon: const Icon(Icons.share),
+                                  label: const Text('Compartilhar sinopse'),
+                                ),
                               ),
                             ],
                           ),
