@@ -18,16 +18,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   bool _isSaving = false;
   bool _isTesting = false;
+  bool _hasSavedKey = false;
 
   @override
   void initState() {
     super.initState();
-    _loadApiKey();
+    _loadApiKeyStatus();
   }
 
-  Future<void> _loadApiKey() async {
+  Future<void> _loadApiKeyStatus() async {
     final key = await _settingsService.getApiKey();
-    _apiKeyController.text = key;
+    if (!mounted) return;
+    setState(() {
+      _hasSavedKey = key.isNotEmpty;
+    });
   }
 
   @override
@@ -42,7 +46,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isSaving = true);
     await _settingsService.saveApiKey(_apiKeyController.text);
     if (!mounted) return;
-    setState(() => _isSaving = false);
+    setState(() {
+      _isSaving = false;
+      _hasSavedKey = true;
+      _apiKeyController.clear();
+    });
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Chave de API salva com sucesso.')),
@@ -50,18 +58,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _testConnection() async {
-    if (!_formKey.currentState!.validate()) return;
+    final typedApiKey = _apiKeyController.text.trim();
+    final apiKeyToTest = typedApiKey.isNotEmpty
+        ? typedApiKey
+        : await _settingsService.getApiKey();
 
-    await _settingsService.saveApiKey(_apiKeyController.text);
+    if (apiKeyToTest.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Informe uma API key para testar a conexão.'),
+        ),
+      );
+      return;
+    }
+
     setState(() => _isTesting = true);
 
     try {
-      await _movieService.searchMovie(
-        title: 'Inception',
-        apiKey: _apiKeyController.text.trim(),
-      );
+      await _movieService.searchMovie(title: 'Inception', apiKey: apiKeyToTest);
+
+      if (typedApiKey.isNotEmpty) {
+        await _settingsService.saveApiKey(typedApiKey);
+      }
 
       if (!mounted) return;
+      setState(() {
+        _hasSavedKey = true;
+        _apiKeyController.clear();
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Conexão com API validada com sucesso.')),
       );
@@ -90,10 +115,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (_hasSavedKey)
+                    Semantics(
+                      liveRegion: true,
+                      child: const Text(
+                        'API key já configurada neste dispositivo. Informe uma nova chave para substituir a atual.',
+                      ),
+                    ),
+                  if (_hasSavedKey) const SizedBox(height: 12),
                   Semantics(
                     textField: true,
-                    label: 'Chave da API OMDb',
-                    hint: 'Digite a sua chave de API e salve para usar na busca',
+                    label: 'Nova chave da API OMDb',
+                    hint:
+                        'Digite a sua nova chave de API e salve para atualizar',
                     child: TextFormField(
                       controller: _apiKeyController,
                       obscureText: true,
@@ -101,9 +135,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       autocorrect: false,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'API key (OMDb)',
+                        labelText: 'Nova API key (OMDb)',
                         hintText: 'Exemplo: abcd1234',
-                        helperText: 'A chave é salva apenas localmente no dispositivo.',
+                        helperText:
+                            'A chave é salva com armazenamento seguro local.',
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -131,11 +166,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Semantics(
                     button: true,
                     label: 'Testar conexão da API',
-                    hint: 'Testa se a API key consegue consultar a API de filmes',
+                    hint:
+                        'Testa se a API key consegue consultar a API de filmes',
                     child: OutlinedButton.icon(
                       onPressed: _isTesting ? null : _testConnection,
                       icon: const Icon(Icons.wifi_tethering),
-                      label: Text(_isTesting ? 'Testando...' : 'Testar conexão'),
+                      label: Text(
+                        _isTesting ? 'Testando...' : 'Testar conexão',
+                      ),
                     ),
                   ),
                 ],
