@@ -20,4 +20,4 @@ Feature: botão de compartilhamento da sinopse com payload de título, ano e sin
 - [ ] Validar TalkBack/foco/tooltip/semântica do botão
 
 ## Resultado
-Sem defeitos críticos identificados na validação automatizada. Execução manual Android deve ser concluída no PR antes do merge.
+Na rodada de QA crítico desta branch, a implementação foi revisada contra `main`, porém ainda há bloqueios de compilação e cobertura parcial dos critérios de aceite. O merge deve ficar bloqueado até saneamento e nova rodada completa de validação.

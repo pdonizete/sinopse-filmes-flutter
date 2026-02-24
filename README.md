@@ -77,9 +77,28 @@ As telas principais incluem:
 - contraste e estrutura visual simples para leitura
 - campo de API key com entrada protegida (`obscureText`) e sem exibição da chave já salva
 
+## Status da entrega (branch `feature/compartilhar-sinopse-ea2de0ef`)
+
+Validação crítica realizada comparando o diff real com `main`:
+
+- Implementação de compartilhamento (UI + semântica/acessibilidade) revisada
+- Documentação e pipelines de CI revisados
+- Execuções de `analyze`, `test` e `build` realizadas durante o QA
+
+### Pendências identificadas no QA
+
+- Existem bloqueios de compilação que precisam ser resolvidos antes do merge
+- A cobertura dos critérios de aceite ainda está incompleta (faltam evidências para todos os cenários)
+
+### Próximos passos recomendados
+
+1. Corrigir os bloqueios de build em todos os targets aplicáveis
+2. Completar cobertura dos critérios de aceite (automatizada e manual)
+3. Reexecutar analyze/test/build e atualizar evidências de QA
+
 ## Qualidade
 
-Comandos utilizados para validação:
+Comandos de validação esperados para fechamento da entrega:
 
 ```bash
 /opt/flutter/bin/flutter pub get
