@@ -4,10 +4,22 @@ import 'package:flutter/semantics.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
 import '../services/settings_service.dart';
+import '../services/share_service.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({
+    super.key,
+    MovieService? movieService,
+    SettingsService? settingsService,
+    ShareService? shareService,
+  }) : _movieService = movieService,
+       _settingsService = settingsService,
+       _shareService = shareService;
+
+  final MovieService? _movieService;
+  final SettingsService? _settingsService;
+  final ShareService? _shareService;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -16,12 +28,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _movieController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _movieService = MovieService();
-  final _settingsService = SettingsService();
+  late final MovieService _movieService;
+  late final SettingsService _settingsService;
+  late final ShareService _shareService;
 
   bool _isLoading = false;
   String? _errorMessage;
   Movie? _movie;
+
+  @override
+  void initState() {
+    super.initState();
+    _movieService = widget._movieService ?? MovieService();
+    _settingsService = widget._settingsService ?? SettingsService();
+    _shareService = widget._shareService ?? SystemShareService();
+  }
 
   @override
   void dispose() {
@@ -73,6 +94,24 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  String _buildShareText(Movie movie) {
+    return '${movie.title} (${movie.year})\n\nSinopse:\n${movie.plot}';
+  }
+
+  Future<void> _shareSynopsis() async {
+    final movie = _movie;
+    if (movie == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Busque um filme antes de compartilhar a sinopse.'),
+        ),
+      );
+      return;
+    }
+
+    await _shareService.shareText(_buildShareText(movie));
+  }
+
   Future<void> _openSettings() async {
     await Navigator.of(
       context,
@@ -85,6 +124,16 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Sinopse de Filmes'),
         actions: [
+          Semantics(
+            button: true,
+            label: 'Compartilhar sinopse',
+            hint: 'Compartilha título, ano e sinopse do filme encontrado',
+            child: IconButton(
+              tooltip: 'Compartilhar sinopse',
+              onPressed: _shareSynopsis,
+              icon: const Icon(Icons.share),
+            ),
+          ),
           Semantics(
             button: true,
             label: 'Abrir configurações',
@@ -182,6 +231,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 _movie!.plot,
                                 style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const SizedBox(height: 16),
+                              Semantics(
+                                button: true,
+                                sortKey: const OrdinalSortKey(3),
+                                label: 'Compartilhar resultado',
+                                hint: 'Compartilha a sinopse encontrada com outros aplicativos',
+                                child: FilledButton.icon(
+                                  onPressed: _shareSynopsis,
+                                  icon: const Icon(Icons.share),
+                                  label: const Text('Compartilhar sinopse'),
+                                ),
                               ),
                             ],
                           ),
