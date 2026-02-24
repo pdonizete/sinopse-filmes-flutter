@@ -14,6 +14,7 @@ App Flutter para buscar sinopse de filmes usando a API pública [OMDb](https://w
 - Migração automática e transparente da chave legada salva em `shared_preferences`
 - Botão para testar conexão com a API
 - Compartilhamento da sinopse via share sheet (WhatsApp, Telegram e outros apps)
+- Entrada **Sobre** na AppBar com modal exibindo nome do app, versão atual e autor
 
 ## Como rodar
 
@@ -30,6 +31,7 @@ cd /home/ubuntu/projetos/sinopse-filmes-flutter
 3. Informe a API key e clique em **Salvar**
 4. (Opcional) Clique em **Testar conexão** para validar a chave
 5. Volte para a Home, digite o nome do filme e clique em **Buscar sinopse**
+6. Para informações do app, use o botão **Sobre** (ícone de informação) na AppBar
 
 ## Armazenamento seguro e migração
 

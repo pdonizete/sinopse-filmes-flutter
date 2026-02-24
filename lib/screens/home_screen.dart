@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
+import '../app_version.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
 import '../services/settings_service.dart';
@@ -14,13 +15,16 @@ class HomeScreen extends StatefulWidget {
     MovieService? movieService,
     SettingsService? settingsService,
     ShareService? shareService,
+    String? appVersion,
   }) : _movieService = movieService,
        _settingsService = settingsService,
-       _shareService = shareService;
+       _shareService = shareService,
+       _appVersion = appVersion ?? defaultAppVersion;
 
   final MovieService? _movieService;
   final SettingsService? _settingsService;
   final ShareService? _shareService;
+  final String _appVersion;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -118,6 +122,36 @@ class _HomeScreenState extends State<HomeScreen> {
     ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
   }
 
+  void _openAboutDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sobre'),
+        content: Semantics(
+          label: 'Informações do aplicativo',
+          hint: 'Exibe nome, versão e autor',
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Sinopse de Filmes'),
+              const SizedBox(height: 8),
+              Text('Versão: ${widget._appVersion}'),
+              const SizedBox(height: 8),
+              const Text('Autor: Paulo Filho'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Fechar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,6 +176,16 @@ class _HomeScreenState extends State<HomeScreen> {
               tooltip: 'Configurações',
               onPressed: _openSettings,
               icon: const Icon(Icons.settings),
+            ),
+          ),
+          Semantics(
+            button: true,
+            label: 'Abrir sobre',
+            hint: 'Abre a janela com informações do aplicativo',
+            child: IconButton(
+              tooltip: 'Sobre',
+              onPressed: _openAboutDialog,
+              icon: const Icon(Icons.info_outline),
             ),
           ),
         ],
