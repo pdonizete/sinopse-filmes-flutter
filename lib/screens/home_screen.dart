@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../models/movie.dart';
 import '../services/movie_service.dart';
@@ -107,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Semantics(
                     textField: true,
+                    sortKey: const OrdinalSortKey(1),
                     label: 'Nome do filme',
                     hint: 'Digite o título do filme para buscar a sinopse',
                     child: TextFormField(
@@ -129,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 12),
                   Semantics(
                     button: true,
+                    sortKey: const OrdinalSortKey(2),
                     label: 'Buscar sinopse',
                     hint: 'Busca o filme informado e exibe os detalhes',
                     child: FilledButton.icon(

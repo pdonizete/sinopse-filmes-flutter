@@ -47,9 +47,9 @@ build/app/outputs/flutter-apk/app-release.apk
 As telas principais incluem:
 
 - `Semantics` com labels/hints em campos e botões
+- ordem lógica de foco com `FocusTraversalGroup` e `OrdinalSortKey`
 - tooltips nos principais botões de ação
 - mensagens de erro e resultado com `liveRegion`
-- fluxo de foco organizado com `FocusTraversalGroup`
 - contraste e estrutura visual simples para leitura
 
 ## Qualidade
