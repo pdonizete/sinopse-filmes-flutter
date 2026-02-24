@@ -6,6 +6,8 @@ App Flutter para buscar sinopse de filmes usando a API pública [OMDb](https://w
 
 - Busca de filme por nome
 - Exibição de título, ano e sinopse completa
+- Compartilhamento da sinopse via share sheet (WhatsApp, Telegram e outros apps), pelo AppBar e pelo card de resultado
+- Tratamento de tentativa de compartilhamento sem resultado com feedback via SnackBar
 - Tratamento de erro para:
   - chave de API ausente/inválida
   - filme não encontrado
@@ -62,6 +64,11 @@ As telas principais incluem:
 - mensagens de erro e resultado com `liveRegion`
 - contraste e estrutura visual simples para leitura
 - campo de API key com entrada protegida (`obscureText`) e sem exibição da chave já salva
+
+## Arquitetura de compartilhamento
+
+- O app usa uma camada `ShareService` para desacoplar a integração com o share sheet da lógica de UI.
+- Esse desacoplamento melhora testabilidade e manutenção, permitindo validar o payload de compartilhamento em testes de widget.
 
 ## Qualidade
 
