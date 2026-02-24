@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../models/movie.dart';
 import '../services/movie_service.dart';
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   String? _errorMessage;
   Movie? _movie;
+  String _appVersion = '1.0.0+1';
 
   @override
   void initState() {
@@ -44,6 +46,21 @@ class _HomeScreenState extends State<HomeScreen> {
     _movieService = widget._movieService ?? MovieService();
     _settingsService = widget._settingsService ?? SettingsService();
     _shareService = widget._shareService ?? ShareService();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() {
+        _appVersion = packageInfo.buildNumber.isNotEmpty
+            ? '${packageInfo.version}+${packageInfo.buildNumber}'
+            : packageInfo.version;
+      });
+    } catch (_) {
+      // Mantém versão padrão em ambientes de teste sem plugin registrado.
+    }
   }
 
   @override
@@ -118,12 +135,44 @@ class _HomeScreenState extends State<HomeScreen> {
     ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
   }
 
+  Future<void> _openAboutDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sobre'),
+        content: Semantics(
+          liveRegion: true,
+          label: 'Informações do aplicativo',
+          child: Text(
+            'Sinopse de Filmes\nVersão: $_appVersion\nAutor: Paulo Filho',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Fechar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sinopse de Filmes'),
         actions: [
+          Semantics(
+            button: true,
+            label: 'Sobre o aplicativo',
+            hint: 'Abre uma janela com nome, versão e autoria do app',
+            child: IconButton(
+              tooltip: 'Sobre',
+              onPressed: _openAboutDialog,
+              icon: const Icon(Icons.info_outline),
+            ),
+          ),
           Semantics(
             button: true,
             label: 'Compartilhar sinopse',
