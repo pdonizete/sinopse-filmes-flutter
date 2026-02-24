@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  analyze-and-test:
+  lint-test-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,14 +17,17 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.5'
+          
           channel: stable
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze
+      - name: Lint (analyze)
         run: flutter analyze
 
-      - name: Test
+      - name: Tests
         run: flutter test
+
+      - name: Build APK (debug)
+        run: flutter build apk --debug
