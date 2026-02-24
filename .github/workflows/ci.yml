@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  analyze-and-test:
+  lint-test-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,8 +23,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze
+      - name: Lint (analyze)
         run: flutter analyze
 
-      - name: Test
+      - name: Tests
         run: flutter test
+
+      - name: Build APK (debug)
+        run: flutter build apk --debug

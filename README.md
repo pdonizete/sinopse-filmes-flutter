@@ -90,6 +90,6 @@ Comandos utilizados para validação:
 
 Workflows em `.github/workflows`:
 
-- `ci.yml`: executa `flutter analyze` e `flutter test` em push/PR para `main`
+- `ci.yml`: executa `flutter analyze`, `flutter test` e `flutter build apk --debug` em push/PR para `main`
 - `build-apk.yml`: gera APK release e publica artefato de build
-- `release.yml`: em tags `v*.*.*`, gera APK release e anexa `app-release.apk` na release do GitHub
+- `release.yml`: em tags `v*.*.*`, gera APK release e cria release **draft** anexando `app-release.apk` no GitHub
