@@ -5,7 +5,10 @@ import 'package:http/http.dart' as http;
 import '../models/movie.dart';
 
 class MovieService {
-  Future<Movie> searchMovie({required String title, required String apiKey}) async {
+  Future<Movie> searchMovie({
+    required String title,
+    required String apiKey,
+  }) async {
     final uri = Uri.http('www.omdbapi.com', '/', {
       't': title,
       'plot': 'full',
@@ -24,7 +27,9 @@ class MovieService {
       if (jsonBody['Response'] == 'False') {
         final error = (jsonBody['Error'] as String?) ?? 'Filme não encontrado.';
         if (error.toLowerCase().contains('api key')) {
-          throw const MovieServiceException('Chave de API inválida ou não autorizada.');
+          throw const MovieServiceException(
+            'Chave de API inválida ou não autorizada.',
+          );
         }
         throw MovieServiceException(error);
       }
