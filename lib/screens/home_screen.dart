@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
+import '../constants/app_metadata.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
 import '../services/settings_service.dart';
@@ -118,6 +119,37 @@ class _HomeScreenState extends State<HomeScreen> {
     ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
   }
 
+  Future<void> _openAboutDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sobre'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(appName),
+            SizedBox(height: 8),
+            Text('Versão: $appVersion'),
+            SizedBox(height: 8),
+            Text('Autor: Paulo Filho'),
+          ],
+        ),
+        actions: [
+          Semantics(
+            button: true,
+            label: 'Fechar janela sobre',
+            hint: 'Fecha o modal com informações do aplicativo',
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Fechar'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,6 +164,16 @@ class _HomeScreenState extends State<HomeScreen> {
               tooltip: 'Compartilhar sinopse',
               onPressed: _shareMovie,
               icon: const Icon(Icons.share),
+            ),
+          ),
+          Semantics(
+            button: true,
+            label: 'Abrir sobre',
+            hint: 'Abre um modal com informações do aplicativo',
+            child: IconButton(
+              tooltip: 'Sobre',
+              onPressed: _openAboutDialog,
+              icon: const Icon(Icons.info_outline),
             ),
           ),
           Semantics(

@@ -14,6 +14,7 @@ App Flutter para buscar sinopse de filmes usando a API pública [OMDb](https://w
 - Migração automática e transparente da chave legada salva em `shared_preferences`
 - Botão para testar conexão com a API
 - Compartilhamento da sinopse via share sheet (WhatsApp, Telegram e outros apps)
+- Entrada "Sobre" no AppBar com modal exibindo nome do app, versão atual e autor
 
 ## Como rodar
 
@@ -58,6 +59,16 @@ build/app/outputs/flutter-apk/app-release.apk
 Após buscar um filme com sucesso, use o botão **Compartilhar** para enviar título, ano e sinopse para apps como WhatsApp, Telegram e qualquer app compatível com o menu de compartilhamento do Android.
 
 Se nenhum filme foi carregado, o app mostra um aviso e não tenta compartilhar conteúdo vazio.
+
+## Modal "Sobre"
+
+O botão **Sobre** (ícone de informação no AppBar) abre um modal com:
+
+- Sinopse de Filmes
+- Versão: 1.0.0+1
+- Autor: Paulo Filho
+
+O modal inclui label/hint de acessibilidade no botão de fechamento para melhor suporte a TalkBack/VoiceOver.
 
 ## Acessibilidade (TalkBack/VoiceOver)
 
