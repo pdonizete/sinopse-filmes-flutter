@@ -4,10 +4,16 @@ import 'package:flutter/semantics.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
 import '../services/settings_service.dart';
+import '../services/share_service.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({
+    super.key,
+    ShareService shareService = const ShareService(),
+  }) : _shareService = shareService;
+
+  final ShareService _shareService;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -79,6 +85,19 @@ class _HomeScreenState extends State<HomeScreen> {
     ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
   }
 
+  Future<void> _shareMovie() async {
+    final movie = _movie;
+    if (movie == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Busque um filme antes de compartilhar.')),
+      );
+      return;
+    }
+
+    await widget._shareService.shareMovie(movie);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,6 +157,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: _isLoading ? null : _searchMovie,
                       icon: const Icon(Icons.search),
                       label: const Text('Buscar sinopse'),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Semantics(
+                    button: true,
+                    enabled: _movie != null,
+                    sortKey: const OrdinalSortKey(3),
+                    label: 'Compartilhar sinopse',
+                    hint: 'Compartilha título, ano e sinopse do filme carregado',
+                    child: Tooltip(
+                      message: 'Compartilhar sinopse',
+                      child: FilledButton.icon(
+                        onPressed: _movie == null ? null : _shareMovie,
+                        icon: const Icon(Icons.share),
+                        label: const Text('Compartilhar sinopse'),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),

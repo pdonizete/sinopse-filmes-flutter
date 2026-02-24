@@ -12,6 +12,8 @@
 - Migração automática de valor legado salvo em `shared_preferences`
 - Ajustes na tela de Configurações para não exibir a chave já salva
 - Novos testes de serviço para persistência e migração
+- Compartilhamento da sinopse via share sheet nativo (WhatsApp/Telegram/apps compatíveis)
+- Cobertura de testes para payload de compartilhamento e estado sem resultado
 - Pipelines GitHub Actions para CI, build de APK e release por tag
 
 ## Checklist antes de publicar
