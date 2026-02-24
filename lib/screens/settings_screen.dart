@@ -52,6 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _testConnection() async {
     if (!_formKey.currentState!.validate()) return;
 
+    await _settingsService.saveApiKey(_apiKeyController.text);
     setState(() => _isTesting = true);
 
     try {
@@ -95,10 +96,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     hint: 'Digite a sua chave de API e salve para usar na busca',
                     child: TextFormField(
                       controller: _apiKeyController,
+                      obscureText: true,
+                      enableSuggestions: false,
+                      autocorrect: false,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'API key (OMDb)',
                         hintText: 'Exemplo: abcd1234',
+                        helperText: 'A chave é salva apenas localmente no dispositivo.',
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
